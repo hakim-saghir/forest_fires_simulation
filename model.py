@@ -4,7 +4,8 @@ import pygame
 from config import SCREEN_WIDTH, SCREEN_HIGH, COLOR_WHITE, SCREEN_LEFT_PADDING, SCREEN_TOP_PADDING, \
     FOREST_CONTOUR_WIDTH, FOREST_CONTOUR_HEIGHT, COLOR_GREY, COLOR_LIGHT_GREY, PARAMETERS_X_START, \
     PARAMETERS_CONTOUR_WIDTH, PARAMETERS_CONTOUR_HEIGHT, IMAGES_PATH, TABLE_HIGH, TABLE_WIDTH, IMAGES_VALUE, \
-    IMAGE_HEIGHT, IMAGE_WIDTH, WIND_IMAGE_WIDTH, WIND_IMAGE_HEIGHT, PATH_TO_LOGO, STOP_IF_NO_FIRE
+    IMAGE_HEIGHT, IMAGE_WIDTH, WIND_IMAGE_WIDTH, WIND_IMAGE_HEIGHT, PATH_TO_LOGO, STOP_IF_NO_FIRE, \
+    AUTO_REGENERATE_FOREST_AFTER_GENERATIONS
 from pathlib import Path
 from widgets import ControlsSlidersClass, ControlsButtonsClass, ControlsTextBoxesClass
 
@@ -45,6 +46,7 @@ class Model:
 
         # GENERATION DE LA MATRICE
         self.matrix = None
+        self.matrix_generation = np.zeros(shape=(TABLE_HIGH - 2, TABLE_WIDTH - 2), dtype=np.int)
 
         # CREATION DES SLIDERS ET DES BOUTTONS
         self.sliders = ControlsSlidersClass(self)
@@ -92,6 +94,8 @@ class Model:
     # INCREMENTER UNE CELLULE DE LA MATRICE
     def change_cell(self, x, y):
         self.matrix[y, x] = (self.matrix[y, x] + 1) % 4
+        if self.buttons.AUTO_REGENERATE_FOREST and self.matrix[y, x] == 1:
+            self.matrix_generation[y - 1, x - 1] = 0
         self.display_matrix()
 
     # GENERER LA GENERATION SUIVANTE DE LA MATRICE
@@ -100,9 +104,16 @@ class Model:
         stop_generations = True
         for line in range(1, TABLE_HIGH - 1):
             for column in range(1, TABLE_WIDTH - 1):
-
-                if self.matrix[line, column] == 0:
+                # Vide
+                if self.buttons.AUTO_REGENERATE_FOREST and self.matrix[line, column] == 1:
+                    self.matrix_generation[line - 1, column - 1] += 1
+                    if self.matrix_generation[line - 1, column - 1] == AUTO_REGENERATE_FOREST_AFTER_GENERATIONS:
+                        temporary_matrix[line, column] = 3
+                    # Feu
+                elif self.matrix[line, column] == 0:
                     temporary_matrix[line, column] = 1
+                    self.matrix_generation[line - 1, column - 1] = 0
+                # Arbre
                 elif self.matrix[line, column] == 3 and \
                         ((not wind_south and (not self.matrix[line - 1, column - 1] or
                                               not self.matrix[line - 1, column] or

@@ -1,7 +1,8 @@
+import pygame_widgets
+from config import COLOR_LIGHT_GREY, COLOR_BLACK
 from pygame_widgets.button import Button
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
-from config import COLOR_LIGHT_GREY, COLOR_BLACK
 
 
 # ######################################## CREATION DES WIDGETS ################################################### #
@@ -136,6 +137,7 @@ class ControlsButtonsClass:
         self.model = model_arg
         self.WIND_SOUTH_ENABLED = False
         self.GENERATION_LAUNCHED = False
+        self.AUTO_REGENERATE_FOREST = False
         self.CURRENT_GENERATION = 0
 
         # *** Boutton de génération de forêt
@@ -158,6 +160,22 @@ class ControlsButtonsClass:
         self.button_wind_south = Button(self.model.screen, 50, 680, 1000, 100, text="Cliquer ici pour activer le vent",
                                         inactiveColour=(255, 255, 255), hoverColour=(240, 240, 240),
                                         pressedColour=(240, 240, 240), radius=20, onClick=lambda: self.show_wind_button())
+
+        # *** Boutton d'arrêt de la génération
+        self.auto_regenerate = Button(self.model.screen, 1100, 350, 180, 30, text="Regénérer après 200 gen",
+                                      inactiveColour=(255, 0, 0),
+                                      pressedColour=(240, 240, 240), radius=20,
+                                      onClick=lambda: self.auto_regenerate_button())
+
+    def auto_regenerate_button(self):
+        if self.AUTO_REGENERATE_FOREST:
+            self.auto_regenerate.setInactiveColour((255, 0, 0))
+            self.AUTO_REGENERATE_FOREST = False
+        else:
+            self.auto_regenerate.setInactiveColour((0, 255, 0))
+            self.AUTO_REGENERATE_FOREST = True
+
+        pygame_widgets.update(None)
 
     def generate_new_forest_button(self):
         self.model.generate_random_forest_matrix(self.model.sliders.slider_trees_percentage.getValue() / 100,
