@@ -31,7 +31,7 @@ class ControlsSlidersClass:
         # ************************ Slider de la vitesse ************************
         self.slider_speed_percentage = Slider(win=self.model.screen, x=1115, y=460, width=150, height=10, min=1, max=50,
                                               step=1, colour=[0, 0, 0], handleColour=COLOR_LIGHT_GREY)
-        self.slider_speed_percentage.setValue(3)
+        self.slider_speed_percentage.setValue(25)
 
     # Ajuster la valeur des sliders pour avoir toujours une somme des valeurs à 100 %
     def check_sliders_values(self):
