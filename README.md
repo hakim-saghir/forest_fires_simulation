@@ -1,5 +1,5 @@
 # forest_fires_simulation
-Simulation de feux de forêt - Biomémétisme
+Simulation de feux de forêt en utilisant un automate cellulaire - Biomémétisme
 
 Version python utilisée : 3.10
 
